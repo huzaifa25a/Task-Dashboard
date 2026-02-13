@@ -1,24 +1,38 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function Header() {
   const router = useRouter();
 
+  const [token, setToken] = useState(null);
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const storedToken = localStorage.getItem("token");
+    const storedName = localStorage.getItem("name");
+
+    setToken(storedToken);
+
+    if (storedName) {
+      const firstName = storedName.split(" ")[0];
+      const formatted =
+        firstName.charAt(0).toUpperCase() +
+        firstName.slice(1).toLowerCase();
+
+      setName(formatted);
+    }
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("name");
     router.push("/");
   };
-
-  const start = localStorage.getItem("name").split(" ")[0].charAt(0).toUpperCase();
-  const end = localStorage.getItem("name").split(" ")[0].slice(1).toLowerCase();
-
-  const name = start+end;
-
-  const token = typeof window !== "undefined"
-    ? localStorage.getItem("token")
-    : null;
 
   return (
     <header className="p-6 text-white">
@@ -29,13 +43,13 @@ export default function Header() {
           </div>
           <div className="flex flex-row gap-5">
             <Link href="/dashboard" className="px-2 py-1">
-                Dashboard
+              Dashboard
             </Link>
-            <button 
-                className="rounded-md px-2 py-1 bg-red-600 border-white border-2 hover:bg-red-700 duration-100 cursor-pointer"
-                onClick={handleLogout}
+            <button
+              className="rounded-md px-2 py-1 bg-red-600 border-white border-2 hover:bg-red-700 duration-100 cursor-pointer"
+              onClick={handleLogout}
             >
-                Logout
+              Logout
             </button>
           </div>
         </div>

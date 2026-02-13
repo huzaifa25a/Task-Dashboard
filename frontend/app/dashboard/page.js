@@ -37,7 +37,7 @@ export default function Dashboard() {
   async function getTasks() {
     if (typeof window === "undefined") return;
     const token = localStorage.getItem('token');
-    const response = await fetch(`${process.env.API_URL}/api/tasks/getTask`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/getTask`, {
       method: "GET",
       headers: { authorization: `Bearer ${token}` },
     });
@@ -57,7 +57,7 @@ export default function Dashboard() {
   async function addTaskHandler() {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${process.env.API_URL}/api/tasks/addTask`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/addTask`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,7 +87,7 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.API_URL}/api/tasks/editTask/${updatedForm.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/editTask/${updatedForm.id}`,
         {
           method: "PUT",
           headers: {
@@ -114,7 +114,7 @@ export default function Dashboard() {
   async function handleDeleteTask(){
     try{
         const token = localStorage.getItem("token");
-        const response = await fetch(`${process.env.API_URL}/api/tasks/deleteTask/${showDeleteMessage}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/deleteTask/${showDeleteMessage}`, {
             method: 'DELETE',
             headers: {
                 "Content-Type": "application/json",
@@ -137,7 +137,7 @@ export default function Dashboard() {
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `${process.env.API_URL}/api/tasks/editTask/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/editTask/${id}`,
           {
             method: "PUT",
             headers: {
