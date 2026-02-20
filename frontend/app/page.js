@@ -9,10 +9,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showRegister, setshowRegister] = useState(false);
+  const [LoginLoader, setLoginLoader] = useState(false);
+  const [SignInLoader, setSignInLoader] = useState(false);
 
   const router = useRouter();
 
   const handleLogin = async (e) => {
+    setLoginLoader(true);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
       {
@@ -30,17 +33,22 @@ export default function LoginPage() {
       localStorage.setItem("name", data.user.name);
       localStorage.setItem("email", data.user.email);
       router.push("/dashboard");
+      setLoginLoader(false);
     } else {
       alert(data.message);
+      setLoginLoader(false);
     }
   };
 
   const handleRegister = async (e) => {
+    setSignInLoader(true);
     if (password !== confirmPassword) {
+      setSignInLoader(false);
       return alert("Passwords do not match!");
     }
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(email)) {
+      setSignInLoader(false);  
       return alert("Email is not valid!");
     }
     const res = await fetch(
@@ -59,8 +67,10 @@ export default function LoginPage() {
       localStorage.setItem("name", data.user.name);
       localStorage.setItem("email", data.user.email);
       router.push("/dashboard");
+      setSignInLoader(false)
     } else {
       alert(data.message);
+      setSignInLoader(false);
     }
   };
 
@@ -121,17 +131,31 @@ export default function LoginPage() {
             )}
             {showRegister ? (
               <button
-                className="bg-[#d5d5d53f] w-40 cursor-pointer text-white rounded-lg px-2 py-1 border-2 border-[#ffffffa2] hover:border-white hover:bg-[#d5d5d588] duration-100"
+                className="bg-[#d5d5d53f] flex justify-center w-40 cursor-pointer text-white rounded-lg px-2 py-1 border-2 border-[#ffffffa2] hover:border-white hover:bg-[#d5d5d588] duration-100"
                 onClick={handleRegister}
               >
-                Register
+                {SignInLoader ?
+                    <div className="flex items-center gap-1">
+                        <span>Please wait...</span>
+                        <img src="/tube-spinner.svg" className="h-5" />
+                    </div>  
+                : 
+                    'Register'
+                }
               </button>
             ) : (
               <button
-                className="bg-[#d5d5d53f] w-40 cursor-pointer text-white rounded-lg px-2 py-1 border-2 border-[#ffffffa2] hover:border-white hover:bg-[#d5d5d588] duration-100"
+                className="bg-[#d5d5d53f] flex justify-center w-40 cursor-pointer text-white rounded-lg px-2 py-1 border-2 border-[#ffffffa2] hover:border-white hover:bg-[#d5d5d588] duration-100"
                 onClick={handleLogin}
               >
-                Login
+                {LoginLoader ?
+                    <div className="flex items-center gap-1">
+                        <span>Please wait...</span>
+                        <img src="/tube-spinner.svg" className="h-5" />
+                    </div>  
+                : 
+                    'Login'
+                }
               </button>
             )}
           </div>

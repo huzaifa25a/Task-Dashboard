@@ -8,6 +8,7 @@ import Footer from "../components/Footer";
 export default function Dashboard() {
   const [Loader, setLoader] = useState(true);
   const [Tasks, setTasks] = useState([]);
+  const [FilteredTasks, setFilteredTasks] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [Form, setForm] = useState({
     title: "",
@@ -22,6 +23,9 @@ export default function Dashboard() {
     tags: "",
     status: "",
   });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilter, setShowFilter] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('');
   const [showDeleteMessage, setShowDeleteMessage] = useState("");
 
   const router = useRouter();
@@ -175,6 +179,56 @@ export default function Dashboard() {
     }
   }
 
+  function handleSearchChange(e){
+    const search = e.target.value.toLowerCase();
+    setSearchTerm(search);
+  
+    if(search.trim().length > 0){
+      const tasks = Tasks.filter(task => (
+        task.title.toLowerCase().includes(search) || 
+        task.tags?.toLowerCase().includes(search)
+      ));
+      setFilteredTasks(tasks);
+    }
+    else{
+      setFilteredTasks([]);
+    }
+  }
+
+  function handleSort(type){
+    setActiveFilter('');
+    setFilteredTasks([])
+    if(type === 'completed'){
+      const tasks = Tasks.filter(task => (task.status === 'Completed'));
+      setActiveFilter('completed')
+      setFilteredTasks(tasks)
+      console.log(tasks);
+    }
+    if(type === 'inProgress'){
+      const tasks = Tasks.filter(task => (task.status === 'In-Progress'));
+      setActiveFilter('inProgress')
+      setFilteredTasks(tasks)
+      console.log(tasks);
+    }
+    if(type === 'first'){
+      const tasks = [...Tasks].sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+      setActiveFilter('first')
+      setFilteredTasks(tasks)
+      console.log(tasks);
+    }
+    if(type === 'last'){
+      const tasks = [...Tasks].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setActiveFilter('last')
+      setFilteredTasks(tasks)
+      console.log(tasks);
+    }
+  }
+
+  const tasksToRender = 
+  FilteredTasks.length > 0 || searchTerm.length > 0 || activeFilter
+    ? FilteredTasks
+    : Tasks;
+
   return (
     <div className="text-white bg-linear-to-r from-[#3F5EFB] to-[#FC466B]">
       <title>Dashboard</title>
@@ -190,18 +244,66 @@ export default function Dashboard() {
             <h1 className="text-[24px] font-bold mb-10">Task Dashboard</h1>
             <div className={`flex flex-col items-start gap-2`}>
               {Tasks.length > 0 && (
-                <button
-                  onClick={() => setShowPopup(true)}
-                  className="bg-green-700 hover:bg-green-800 w-30 cursor-pointer border-gray-200 border rounded-md p-1"
-                >
-                  <span>
-                    <span className="text-[18px] font-bold">+</span> Add Task{" "}
-                  </span>
-                </button>
+                <div className="w-full flex flex-col gap-7">
+                  <div className="flex justify-center gap-10">
+                    {showFilter ? 
+                      <div className="flex gap-2">
+                        <button
+                          className={`${activeFilter === 'completed' ? 'bg-[#ffffff36]' : ''} cursor-pointer flex justify-center gap-3 items-center border-2 border-[#ffffff] px-2 py-1 rounded-full`}
+                          onClick={() => handleSort('completed')}
+                        >
+                          Completed
+                        </button>
+                        <button
+                          className={`${activeFilter === 'inProgress' ? 'bg-[#ffffff36]' : ''} cursor-pointer flex justify-center gap-3 items-center border-2 border-[#ffffff] px-2 py-1 rounded-full`}
+                          onClick={() => handleSort('inProgress')}
+                        >
+                          In-Progress
+                        </button>
+                        <button
+                          className={`${activeFilter === 'first' ? 'bg-[#ffffff36]' : ''} cursor-pointer flex justify-center gap-3 items-center border-2 border-[#ffffff] px-2 py-1 rounded-full`}
+                          onClick={() => handleSort('first')}
+                        >
+                          First Added
+                        </button>
+                        <button
+                          className={`${activeFilter === 'last' ? 'bg-[#ffffff36]' : ''} cursor-pointer flex justify-center gap-3 items-center border-2 border-[#ffffff] px-2 py-1 rounded-full`}
+                          onClick={() => handleSort('last')}
+                        >
+                          Last Added
+                        </button>
+                      </div>
+                    :
+                      <div className={`flex gap-3 items-center border-2 ${searchTerm.length > 0 ? 'border-[#ffffff]' : 'border-[#ffffff76]' } px-2 py-1 rounded-full`}>
+                        <img src='/search.svg' className="h-5"/>
+                        <input 
+                          className="w-90 text-white focus:outline-none"
+                          type="text"
+                          placeholder="Search Task..."
+                          onChange={handleSearchChange}
+                        />
+                      </div>
+                    }
+                    <button 
+                      className={`${showFilter ? 'bg-[#ffffff36]' : ''} cursor-pointer flex justify-center w-15 gap-3 items-center border-2 border-[#ffffff] px-2 py-1 rounded-full`}
+                      onClick={() => {setActiveFilter(''); setShowFilter(!showFilter); setFilteredTasks([]);}}
+                    >
+                      <img src='/filter.svg' className="h-5"/>
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => setShowPopup(true)}
+                    className="bg-green-700 hover:bg-green-800 w-30 cursor-pointer border-gray-200 border rounded-md p-1"
+                  >
+                    <span>
+                      <span className="text-[18px] font-bold">+</span> Add Task{" "}
+                    </span>
+                  </button>
+                </div>
               )}
               <div className="flex flex-col gap-4 items-center justify-center">
                 {Tasks.length > 0 ? (
-                  Tasks.map((task, index) => (
+                  tasksToRender.map((task, index) => (
                     <div>
                       <div
                         key={index}
