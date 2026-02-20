@@ -59,7 +59,7 @@ router.post('/login', async (req, res) => {
         const verify = await bcrypt.compare(password, _user.password);
 
         if(!verify){
-            return res.status(401).json({message: 'Unauthorized access!'});
+            return res.status(401).json({message: 'Password is Incorrect!'});
         }
 
         const token = jwt.sign(
