@@ -38,7 +38,7 @@ export default function Header() {
     <header className="p-6 text-white">
       {token && (
         <div className="flex flex-row justify-between">
-          <div className="px-2 py-1">
+          <div className="px-2 py-1 text-[18px]">
             Welcome, {name}!
           </div>
           <div className="flex flex-row gap-5">
